@@ -64,29 +64,28 @@ const { title, isFeatured = false } = Astro.props;
 
 Each class string is written out in full. Tailwind finds classes by scanning source text, so a name built at runtime, such as `` `bg-${color}-600` ``, is never generated and is missing in production.
 
-### A 3D island on an Astro page
-
-WebGL cannot render on the server, so a React Three Fiber scene is a client-only island. A static fallback (here an SVG wireframe drawn at build time) is what loads first, and it stays if JavaScript never runs.
+### A 3D section on an Astro page
+A scene document is drawn by `<lts-scene>` (`@hedronite/lts-scene/element`), a custom element with no React: the
+page ships a poster and one module script that registers the element, and the element loads three and the scene
+builder only when it is about to be seen (STACK.md, "Scene element"). The document itself is inline in the HTML,
+so the scene is read without a fetch.
 
 ```astro
 ---
-import { platonic } from "@hedronite/lts-primitives";
-import Wireframe from "../components/Wireframe.astro";
 import Layout from "../layouts/Layout.astro";
-// The site's own island: a React component (apps/site/src/components/Showcase.tsx)
-// that draws library solids with @hedronite/lts-adapters.
-import Showcase from "../components/Showcase";
+// The scene document, validated (`lumin scene validate`) and kept in apps/site/src; it is inlined into the
+// element below. The poster is a scripted render of it (bun run poster).
+import solidsDocument from "../scene/solids.json";
 ---
-
 <Layout title="Showcase">
   <h1 class="text-3xl font-semibold">Showcase</h1>
-  <Showcase client:only="react">
-    <div slot="fallback"><Wireframe shape={platonic("icosahedron")} size={120} /></div>
-  </Showcase>
+  <lts-scene poster="/solids-poster.png" alt="Three solids, rendered in 3D.">
+    <script type="application/json" set:html={JSON.stringify(solidsDocument)} />
+  </lts-scene>
+  <!-- One processed script registers the element and mirrors the page's look onto its `look` attribute. -->
+  <script src="../sceneElement.ts"></script>
 </Layout>
 ```
-
----
 
 ## 3. Build pipelines
 
@@ -265,6 +264,27 @@ bun run e2e:scenes:loose  # loose, below: software WebGL, what CI runs in its go
 - **Counters.** The ones the site island publishes, on the element, in the same shape: `data-frames` (frames drawn), `data-builds` (distinct meshes, geometries and materials ever attached, by `uuid`; never goes down, a new connection raises it, a look leaves it), `data-geometries`, `data-textures` and `data-targets` (the renderer's own memory report), and `data-programs`. After a disconnect, `data-leftovers` is the renderer's geometries, textures and targets after the scene was freed and before the renderer was: an empty scene leaves the renderer's own, and a scene that frees all it built leaves the same.
 - **Removal.** Disconnecting frees the scene (geometries, materials, textures, shaders, passes), the renderer and the canvas, the observers and the media-query listener, and shows the poster again. Connecting it again builds again. The module needs a browser: import it where `HTMLElement` exists.
 - **Test page and size.** `apps/catalog/element.html` hosts the cases (`?only=a,b` keeps the instances with those ids), built by `vite.element.config.ts` after the catalog's own build, into the same dist and with its own public folder (`element-public/`), so no catalog bundle moves for it. `e2e/element.spec.ts` runs in the default run (software WebGL, `webgl2`) and on the WebGPU lane (`webgpu`). Two lines of `assets/budgets.json` hold the size: `scene-element` (what a page loads, 2,928 of 3,100 gzip bytes) and `scene-element-3d` (the chunk set it imports in view, 332,581 of 334,500).
+
+### One renderer
+Every viewport in the library and the apps draws on three's `WebGPURenderer` — `WebGPU` where the browser has
+it, WebGL 2 where it does not — through one seam: `WebGPUCanvas` (`@hedronite/lts-adapters/webgpu`) for the
+React views, and a hand-built `WebGPURenderer` whose canvas carries the same readout for the pages without
+React (the scene element, the embed page, the still rig). Every canvas says which backend drew it:
+`data-renderer="webgpu"` or `"webgl2"`, set by `rendererReadout` (`@hedronite/lts-scene/renderer`) right
+after `init()`, and the e2e specs hold each viewport to it with `expectRenderer` (`e2e/fixtures.ts`).
+
+- **Why.** TSL shaders and the screen effects need the WebGPU renderer; one renderer means one lighting
+  model (the studio room of `studioRoom.ts`), one set of behaviours (reduced motion, pause, dispose), and
+  one reading to test. The WebGL-only `StudioEnvironment` and its PMREM bake left the adapters when the
+  last viewport moved.
+- **The tripwire.** `tools/assets/src/oneRenderer.test.ts` (in `bun run test`) walks `apps/*/src` and
+  `packages/*/src` — skipping tests, generated code and `assets/vendor` — and fails on any `new
+  WebGLRenderer`, on the `WebGLRenderer` identifier at all, and on any plain React Three Fiber `<Canvas>`
+  (the one allowed is `postfx.tsx`, where `WebGPUCanvas` itself is defined and always passes the WebGPU
+  `gl`).
+- **The lanes.** The default run and CI draw with software WebGL, so the WebGPU renderer reports `webgl2`
+  there; `bun run e2e:webgpu` on a GPU machine holds every viewport to `webgpu` (STACK.md, "The WebGPU
+  lane").
 
 ---
 

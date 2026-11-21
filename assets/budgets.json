@@ -7,7 +7,7 @@
     "catalog-embed": { "gzipBytes": 322000 },
     "catalog-3d": { "gzipBytes": 500200 },
     "catalog-panel": { "gzipBytes": 3200 },
-    "site-island": { "gzipBytes": 330000 },
+    "site-island": { "gzipBytes": 2900 },
     "scene-element": { "gzipBytes": 3100 },
     "scene-element-3d": { "gzipBytes": 334500 }
   },

@@ -4,8 +4,8 @@ import { useThree } from "@react-three/fiber";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-// The two environments bake the same room. Each is mounted on a renderer it can use (a stand-in for three's WebGPU renderer, the test renderer's own WebGL one for the root),
-// with the generator that bakes recorded: what both are asked to bake, and how, is what the test compares.
+// The WebGPU studio environment, and what it must keep: the same room the root environment used to bake (see
+// `studioRoom.ts`), a blur of 0.04, three's own intensity of 1 and React Three Fiber's ACES filmic tone mapping.
 interface Bake {
   readonly from: string;
   readonly room: unknown;
@@ -43,7 +43,6 @@ vi.mock("three/webgpu", () => ({
   WebGPURenderer: { [Symbol.hasInstance]: () => true },
 }));
 
-const { StudioEnvironment } = await import("./components.js");
 const { WebGPUStudioEnvironment } = await import("./webgpuEnvironment.js");
 const { STUDIO_BLUR } = await import("./studioRoom.js");
 /** The look the root environment has always had, and what the WebGPU one must keep: React Three Fiber's ACES filmic, and three's own intensity of 1. */
@@ -71,36 +70,28 @@ const mounted = async (element: React.ReactElement) => {
   return { renderer, tone: () => toneMapping, scene: () => scene };
 };
 
-describe("the two studio environments", () => {
+describe("the WebGPU studio environment", () => {
   it("pin the room's values: a blur of 0.04, three's own intensity of 1, and ACES filmic tone mapping", () => {
     expect(STUDIO_BLUR).toBe(studioRoom.blur);
     expect(new Scene().environmentIntensity).toBe(studioRoom.intensity);
   });
 
-  it("bake the same room with the same blur, each through its own renderer's generator, and free the generator at once and the target on unmount", async () => {
-    const webgl = await mounted(<StudioEnvironment />);
+  it("bakes the room with that blur through the WebGPU renderer's generator, and frees the generator at once", async () => {
     const webgpu = await mounted(<WebGPUStudioEnvironment />);
-    expect(bakes.map((bake) => bake.from)).toEqual(["webgl", "webgpu"]);
     for (const bake of bakes) {
       expect(bake.room).toBeInstanceOf(RoomEnvironment);
       expect(bake.sigma).toBe(studioRoom.blur);
       expect(bake.generatorDisposed()).toBe(true);
     }
-    expect(webgl.scene()?.environment).toBe(bakes[0]?.texture);
-    expect(webgpu.scene()?.environment).toBe(bakes[1]?.texture);
-    await webgl.renderer.unmount();
+    expect(webgpu.scene()?.environment).toBe(bakes[0]?.texture);
     await webgpu.renderer.unmount();
-    expect(bakes.map((bake) => bake.targetDisposed())).toEqual([true, true]);
+    for (const bake of bakes) expect(bake.targetDisposed()).toBe(true);
   });
 
-  it("leave the scene's intensity alone, so both light it at three's default, and the renderer gets React Three Fiber's tone mapping", async () => {
-    const webgl = await mounted(<StudioEnvironment />);
+  it("leaves the scene's intensity alone, so the scene lights at three's default, and the renderer gets React Three Fiber's ACES filmic", async () => {
     const webgpu = await mounted(<WebGPUStudioEnvironment />);
-    for (const view of [webgl, webgpu]) {
-      expect(view.scene()?.environmentIntensity).toBe(studioRoom.intensity);
-      expect(view.tone()).toBe(studioRoom.toneMapping);
-    }
-    await webgl.renderer.unmount();
+    expect(webgpu.scene()?.environmentIntensity).toBe(studioRoom.intensity);
+    expect(webgpu.tone()).toBe(studioRoom.toneMapping);
     await webgpu.renderer.unmount();
   });
 });

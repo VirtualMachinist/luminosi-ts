@@ -6,10 +6,13 @@
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "verbatimModuleSyntax": true,
-    "erasableSyntaxOnly": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "erasableSyntaxOnly": true
   },
-  "include": [".astro/types.d.ts", "src"],
-  "exclude": ["dist"]
+  "include": [
+    ".astro/types.d.ts",
+    "src"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }

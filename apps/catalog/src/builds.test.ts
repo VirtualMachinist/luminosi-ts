@@ -225,16 +225,14 @@ describe("every 3D stage in the catalog", () => {
   });
 });
 
-describe("every 3D island on the site", () => {
+describe("every 3D stage on the site", () => {
   const sources = sourcesUnder(fileURLToPath(new URL("../../site/src/", import.meta.url)), true);
-
-  it("has the counter inside each of its Canvas elements, wherever it lives under the site's source", () => {
-    const read = sources.filter(([name]) => !name.endsWith(".astro")).map(([name, text]) => [name, stagesIn(text, "IslandCounts")] as const);
-    expect(read.reduce((all, [, one]) => all + one.stages, 0)).toBeGreaterThanOrEqual(1);
-    expect(Object.fromEntries(read.filter(([, one]) => one.problems.length > 0).map(([name, one]) => [name, one.problems]))).toEqual({});
-  });
-
-  it("has no page that draws a Canvas of its own", () => {
-    expect(sources.filter(([file, text]) => file.endsWith(".astro") && /\bCanvas\b/.test(text)).map(([file]) => file)).toEqual([]);
+  it("draws no canvas of its own: the scene is `<lts-scene>` (`@hedronite/lts-scene/element`), which publishes its own counters", () => {
+    // No source file under the site's tree draws a React Three Fiber stage (the tripwire in
+    // tools/assets/src/oneRenderer.test.ts holds the whole repo to the same), and the element is the only
+    // thing on the page that publishes `data-builds`.
+    expect(sources.filter(([, text]) => /\bCanvas\b/.test(text)).map(([file]) => file)).toEqual([]);
+    expect(sources.filter(([, text]) => /\bIslandCounts\b/.test(text)).map(([file]) => file)).toEqual([]);
+    expect(sources.filter(([file]) => file.endsWith(".astro")).length, "the page is still Astro").toBeGreaterThan(0);
   });
 });

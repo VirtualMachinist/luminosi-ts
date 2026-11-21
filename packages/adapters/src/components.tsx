@@ -9,8 +9,6 @@ import { neutral, type ScenePalette } from "@hedronite/lts-tokens";
 import { useThree, type ThreeElements } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import { useEffectMaterial, type ShaderParams } from "./effectMaterial.js";
-import { PMREMGenerator, type WebGLRenderer } from "three";
-import { bakeStudioRoom } from "./studioRoom.js";
 
 type GroupProps = Omit<ThreeElements["group"], "args" | "children" | "ref" | "object">;
 
@@ -53,30 +51,6 @@ export function PrimitiveMesh({ primitive: id, material = "satin", shader, shade
     [preset],
   );
   return surface === undefined ? null : <mesh geometry={geometry} material={surface} dispose={null} {...props} />;
-}
-
-/** A prefiltered studio room, from WebGL's PMREM generator. */
-function studioTexture(gl: WebGLRenderer) {
-  return bakeStudioRoom(new PMREMGenerator(gl));
-}
-
-/**
- * A procedural studio room as the scene's environment, for reflections on metal, glass and glossy
- * surfaces. Nothing is fetched. Freed on unmount. For the WebGPU renderer (`WebGPUCanvas`) use
- * `WebGPUStudioEnvironment` from `@hedronite/lts-adapters/webgpu`: it bakes the same room (`studioRoom.ts`).
- */
-export function StudioEnvironment() {
-  const gl = useThree((state) => state.gl);
-  // A property check, not an instanceof: this entry must not import three's WebGPU build.
-  if ("isWebGPURenderer" in gl) throw new Error("StudioEnvironment runs on the WebGL renderer: inside <WebGPUCanvas> use WebGPUStudioEnvironment from @hedronite/lts-adapters/webgpu");
-  const target = useMemo(() => studioTexture(gl), [gl]);
-  useEffect(
-    () => () => {
-      target.dispose();
-    },
-    [target],
-  );
-  return <primitive object={target.texture} attach="environment" />;
 }
 
 /** The library's three-point studio rig. */

@@ -115,7 +115,7 @@ export default defineConfig<ConsoleOptions>({
         {
           name: "webgpu",
           // The WebGPU spec, the playground memory guard, which holds the renderer's own counts, render targets among them, flat, and the scene element's spec, which must see `webgpu` on it here.
-          testMatch: ["webgpu.spec.ts", "memory.spec.ts", "element.spec.ts"],
+          testMatch: ["webgpu.spec.ts", "memory.spec.ts", "element.spec.ts", "site.spec.ts"],
           // The real GPU through Metal, with WebGPU switched on: three's WebGPU renderer must find an adapter, not fall back to WebGL 2.
           // Not the software path the default project uses: a SwiftShader adapter would pass for the wrong reason, so the spec also
           // refuses a software adapter (SwiftShader, LLVM, or one that reports itself as a fallback).
@@ -146,6 +146,8 @@ export default defineConfig<ConsoleOptions>({
           // The built catalog on localhost, which is a secure context (navigator.gpu needs one). Its own port and never a reused
           // server, so the lane always runs against the build it just made.
           { command: "bunx vite preview --port 4175 --strictPort", cwd: "apps/catalog", url: "http://localhost:4175", reuseExistingServer: false },
+          // The site's element spec (R22.5) needs its page: the lane serves the built site too.
+          { command: "bunx astro preview --port 4174", cwd: "apps/site", url: "http://localhost:4174", reuseExistingServer: false },
         ]
       : [
     {

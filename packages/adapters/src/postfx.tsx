@@ -12,7 +12,7 @@ import { rendererReadout } from "@hedronite/lts-scene/renderer";
  * it doesn't. TSL surface shaders (`@hedronite/lts-shaders`) and screen effects need it; material
  * presets and every other adapter work on it too. Once the renderer has started the canvas carries `data-renderer`, `webgpu` or `webgl2`,
  * read from the renderer (`rendererReadout`), so a test can tell which backend drew it. Pair it with `WebGPUStudioEnvironment`, which lights
- * a scene as the root `StudioEnvironment` does on the WebGL renderer.
+ * a scene with the studio room the library shares (`studioRoom.ts`).
  */
 export function WebGPUCanvas(props: Omit<CanvasProps, "gl">) {
   return (

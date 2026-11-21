@@ -50,6 +50,19 @@
         "@hedronite/lts-shaders",
         "@hedronite/lts-tokens"
       ]
+    },
+    "apps/site": {
+      "entry": [
+        "src/**/*.astro",
+        "src/**/*.ts"
+      ],
+      "project": [
+        "src/**/*.{astro,ts}"
+      ],
+      "ignoreDependencies": [
+        "@hedronite/lts-tokens",
+        "tailwindcss"
+      ]
     }
   },
   "ignoreBinaries": [

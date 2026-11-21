@@ -67,24 +67,16 @@
       "name": "site",
       "version": "0.0.0",
       "dependencies": {
-        "@astrojs/react": "catalog:",
-        "@hedronite/lts-adapters": "workspace:*",
         "@hedronite/lts-icons": "workspace:*",
         "@hedronite/lts-primitives": "workspace:*",
+        "@hedronite/lts-scene": "workspace:*",
         "@hedronite/lts-tokens": "workspace:*",
-        "@react-three/fiber": "catalog:",
         "@tailwindcss/vite": "catalog:",
         "astro": "catalog:",
-        "react": "catalog:",
-        "react-dom": "catalog:",
         "tailwindcss": "catalog:",
-        "three": "catalog:",
       },
       "devDependencies": {
         "@astrojs/check": "catalog:",
-        "@types/react": "catalog:",
-        "@types/react-dom": "catalog:",
-        "@types/three": "catalog:",
       },
     },
     "packages/adapters": {
@@ -440,7 +432,6 @@
   },
   "catalog": {
     "@astrojs/check": "0.9.12",
-    "@astrojs/react": "7.1.9",
     "@gltf-transform/core": "4.5.1",
     "@gltf-transform/extensions": "4.5.1",
     "@gltf-transform/functions": "4.5.1",
@@ -502,10 +493,6 @@
     "@astrojs/markdown-satteri": ["@astrojs/markdown-satteri@0.4.10", "", { "dependencies": { "@astrojs/internal-helpers": "^0.13.2", "@astrojs/prism": "^4.1.2", "github-slugger": "^2.0.0", "satteri": "^0.11.6" } }, "sha512-3h/wheVjZIcP/m295nkiUjOvCsCs6QpvZ3l4BfDU4ghNQcrcFrNVu1+K+I+YT61hH9tuCDQiGdF8QDzfDoG42w=="],
 
     "@astrojs/prism": ["@astrojs/prism@4.1.2", "", { "dependencies": { "prismjs": "^1.30.0" } }, "sha512-jMrUEpFDarDO1KWPvVc9eSa8DSfwBlwEOHwX+8zvZQpiqXRGDxFnOXHsYqV6DP7w+0qIgTr98gS1GdQlm8ypWg=="],
-
-    "@astrojs/react": ["@astrojs/react@7.1.9", "", { "dependencies": { "@astrojs/internal-helpers": "^0.13.2", "@astrojs/react-renderer": "^0.1.3", "@vitejs/plugin-react": "^6.2.1" }, "peerDependencies": { "@types/react": "^17.0.50 || ^18.0.21 || ^19.0.0", "@types/react-dom": "^17.0.17 || ^18.0.6 || ^19.0.0", "oxc-transform-react": ">=0.145.0 <0.157.0", "react": "^17.0.2 || ^18.0.0 || ^19.0.0", "react-dom": "^17.0.2 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["oxc-transform-react"] }, "sha512-liWZiuPz9N4hEhdhq9kGTN88Ln1STtZQ1Av4kjxwhmeUJXGGxN29P61Tq9E+Bbf5XUU0OstK6FfAPIk+fjjEpw=="],
-
-    "@astrojs/react-renderer": ["@astrojs/react-renderer@0.1.3", "", { "dependencies": { "@astrojs/internal-helpers": "^0.13.2", "@astrojs/runtime": "^0.1.1", "@vitejs/plugin-react": "^6.1.2", "ultrahtml": "^1.7.0" }, "peerDependencies": { "@types/react": "^17.0.50 || ^18.0.21 || ^19.0.0", "@types/react-dom": "^17.0.17 || ^18.0.6 || ^19.0.0", "react": "^17.0.2 || ^18.0.0 || ^19.0.0", "react-dom": "^17.0.2 || ^18.0.0 || ^19.0.0" } }, "sha512-ioKSacePuUwhbFCq4QnCAo7WjEL6nHs99iHs7L5mVmxXvBIoTImlJ16RabKcCK5WtUFGf6rvolu/SIYDsYuGIw=="],
 
     "@astrojs/runtime": ["@astrojs/runtime@0.1.1", "", { "dependencies": { "@oslojs/encoding": "^1.1.0", "clsx": "^2.1.1" } }, "sha512-2Tr9IJ4aQBPDFzlSLq139eWS9OZnuhL0yU2al8cCpnTE/RszygSyGIP8piBmEio1zDUaItb/+YxxsrmldUCBmg=="],
 

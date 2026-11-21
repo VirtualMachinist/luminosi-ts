@@ -5,7 +5,6 @@ export {
   CrystalCluster,
   Lattice,
   PrimitiveMesh,
-  StudioEnvironment,
   StudioLights,
   type CrystalClusterProps,
   type LatticeProps,

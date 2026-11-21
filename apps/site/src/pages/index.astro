@@ -2,9 +2,9 @@
 import { arrowRight, copy, cube, dodecahedron, grid, icosahedron, layers, octahedron, search, sparkle, star, tetrahedron } from "@hedronite/lts-icons";
 import { platonic, platonicSolids } from "@hedronite/lts-primitives";
 import Icon from "../components/Icon.astro";
-import Showcase from "../components/Showcase";
 import Wireframe from "../components/Wireframe.astro";
 import Layout from "../layouts/Layout.astro";
+import solidsDocument from "../scene/solids.json";
 
 const icons = [arrowRight, search, copy, grid, layers, sparkle, star, tetrahedron, cube, octahedron, icosahedron, dodecahedron];
 const solids = platonicSolids.map((solid) => ({ solid, shape: platonic(solid) }));
@@ -49,12 +49,11 @@ const solids = platonicSolids.map((solid) => ({ solid, shape: platonic(solid) })
     <section aria-labelledby="three-title" class="mt-14">
       <h2 id="three-title" class="text-xl font-semibold">In 3D</h2>
       <div class="mt-4 overflow-hidden rounded-xl border border-line bg-surface-raised" data-testid="island">
-        <Showcase client:only="react">
-          <div slot="fallback" class="grid h-72 place-items-center text-fg-muted">
-            <Wireframe shape={platonic("icosahedron")} size={120} />
-          </div>
-        </Showcase>
+        <lts-scene poster="/solids-poster.png" alt="An octahedron in metal, an icosahedron in glass and a dodecahedron in satin, rendered in 3D." class="block h-72 w-full">
+          <script type="application/json" set:html={JSON.stringify(solidsDocument).replace(/</g, "\u003c")} />
+        </lts-scene>
       </div>
     </section>
   </main>
+  <script src="../sceneElement.ts"></script>
 </Layout>

@@ -12,8 +12,9 @@ vi.mock("@hedronite/lts-shaders/three", () => {
 describe("the adapters' entries", () => {
   it("loads the root entry without three's WebGPU build or the shader builders", async () => {
     const root = await import("./index.js");
-    expect(Object.keys(root)).toEqual(expect.arrayContaining(["PrimitiveMesh", "StudioEnvironment", "StudioLights"]));
-    for (const name of ["WebGPUCanvas", "ScreenEffectsPass", "WebGPUStudioEnvironment"]) expect(root).not.toHaveProperty(name);
+    expect(Object.keys(root)).toEqual(expect.arrayContaining(["PrimitiveMesh", "StudioLights"]));
+      // The root environment is gone (one renderer); its name must not come back here, and the WebGPU set stays in ./webgpu.
+    for (const name of ["StudioEnvironment", "WebGPUCanvas", "ScreenEffectsPass", "WebGPUStudioEnvironment"]) expect(root).not.toHaveProperty(name);
   });
 
   it("keeps WebGPUCanvas, ScreenEffectsPass and the WebGPU environment in ./webgpu, which does need the WebGPU build", async () => {
